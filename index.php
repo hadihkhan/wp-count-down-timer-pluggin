@@ -10,16 +10,18 @@
 
 
 // Database table creation for counter pluggin
-$table_name = $wpdb->prefix . 'countdown_timer';
+
 function create_database_for_pluggin () {
 	
 	global $wpdb;
   	global $table_name;
+    
+    $table_name = $wpdb->prefix . 'countdown_timer';
  
 	// create the ECPT metabox database table
-	if($wpdb->get_var("show tables like '".$this->table_name."'") != $this->table_name) 
+	if($wpdb->get_var("show tables like '".$table_name."'") != $table_name) 
 	{
-		$sql = "CREATE TABLE " . $this->table_name . " (
+		$sql = "CREATE TABLE " . $table_name . " (
 		`id` INT NOT NULL AUTO_INCREMENT,
 		`prayer_day` VARCHAR(100) NULL,
 		`prayer_start_time` DATETIME NULL, 
