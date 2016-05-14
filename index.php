@@ -109,7 +109,7 @@ function form_display () { ?>
 	    			<input type="time" name="start_time" value=""></label></p>
 	    		
 	    		<p><label for="end_time">Prayer End Time: <span style="color:red">*</span> <br>
-	    		<input type="time" name="end_time" value=""></label></p></label></p>
+	    		<input type="time" name="end_time" value=""></label></p>
 	    		
 	    		<p><label for="message_human">Daylight Savings: <span style="color:red">*</span> <br>
 	    			<input type="radio" name="daylight" value="0" checked> Enable<br>
@@ -118,7 +118,7 @@ function form_display () { ?>
 	    		<p><input type="submit"></p>
 	  		</form>
 		</div>
-	</div>
+	
 <?php }	
 
 
