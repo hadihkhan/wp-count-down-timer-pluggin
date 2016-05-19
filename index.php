@@ -89,7 +89,10 @@ function wp_dateTime_counter_admin_page () { ?>
 	</div>
 	
 <?php }
-
+//Extracting data from the database
+function select_data_from_database() {
+	$data_from_database = $wpdb->get_results('SELECT * FROM '.$table_name.'');
+}
 
 //display form in admin section
 function form_display () { 
