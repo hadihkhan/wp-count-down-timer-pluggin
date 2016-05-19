@@ -27,6 +27,7 @@ function create_database_for_pluggin () {
 		`prayer_start_time` DATETIME NULL, 
 		`prayer_end_time` DATETIME NOT NULL,
 		`current_date_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `daysaving_is_enabled` INT(2) NOT NULL DEFAULT '0',
 		UNIQUE KEY id (id)
 		);";
 
@@ -52,8 +53,7 @@ function wp_dateTime_counter() {
 		<div id="getting-started"></div>
 		<script type="text/javascript">
 		jQuery(document).ready(function(){
-			//var nextYear = moment.tz("<?php echo $current_date_time->date; ?>", "EST");
-		   	jQuery("#getting-started")
+			jQuery("#getting-started")
 		   	.countdown("<?php echo $next_sunday; ?>", function(event) {
 		     jQuery(this).text(
 		       event.strftime('(BETA TESTING): %D days %H:%M:%S')
@@ -92,10 +92,22 @@ function wp_dateTime_counter_admin_page () { ?>
 
 
 //display form in admin section
-function form_display () { ?>
+function form_display () { 
+    if(isset($_POST['form-submission'])) {
+        $results = $wpdb->insert('$table_name', 
+                                    array(
+                                        'prayer_day' => $_POST['day'],
+                                        'prayer_start_time' => $_POST['start_time'] ,
+                                        'prayer_end_time' => $_POST['end_time'],
+                                        'daysaving_is_enabled' => $_POST['daylight'],
+                                    )
+                                );
+    } else {                      
+
+?>
 	<div id="respond">
 			<?php //echo $response; ?>
-			<form action="" method="post">
+			<form action="<?php esc_url( $_SERVER['REQUEST_URI'] ); ?> " method="POST">
 	    		<p><label for="name">Prayer Day: <span style="color:red">*</span> <br>
 		    		<input type="radio" name="day" value="Monday" > Monday<br>
 	  				<input type="radio" name="day" value="Tuesday"> Tuesday<br>
@@ -115,11 +127,16 @@ function form_display () { ?>
 	    			<input type="radio" name="daylight" value="0" checked> Enable<br>
 	  				<input type="radio" name="daylight" value="1" > Disable<br></label></p>
 	    		<input type="hidden" name="submitted" value="1">
-	    		<p><input type="submit"></p>
+	    		<p><input type="submit" name="form-submission"></p>
 	  		</form>
 		</div>
 	
 <?php }	
+}
+
+function load_cutom_plugin_scripts () {
+    wp_enqueue_script ('customJsPlugin', plugin_dir_url ( __FILE__ ) . "assets/js/jquery.countdown.min.js", "", "". true);
+}
 
 
 
@@ -127,4 +144,5 @@ function form_display () { ?>
 add_action('admin_menu', 'wp_dateTime_counter_admin_page_display'); // Set option in wordpress admin panel
 add_shortcode('sp_countdown_timer', 'wp_dateTime_counter');
 register_activation_hook(__FILE__,'create_database_for_pluggin'); // create database when pluggin is activated
+add_action('admin_engueue_scripts', 'load_cutom_plugin_scripts');
 ?>
