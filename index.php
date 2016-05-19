@@ -7,14 +7,11 @@
     Version: 1.0
     Author URI: http://localhost/
     */
-
+// public global $wpdb;
+// public global $table_name;
+$table_name = $wpdb->prefix . 'countdown_timer';
 
 // Database table creation for counter pluggin
-
-    global $wpdb;
-  	global $table_name;
-  	$table_name = $wpdb->prefix . 'countdown_timer';
-
 function create_database_for_pluggin () {
 	// $table_name = $wpdb->prefix . 'countdown_timer';
  
@@ -123,7 +120,10 @@ function select_data_from_database() {
 }
 
 //display form in admin section
-function form_display () { 
+function form_display () {
+	global $wpdb;
+	//$table_name = $wpdb->prefix . 'countdown_timer';
+	$database_data = select_data_from_database();
     if(isset($_POST['form-submission'])) {
         $results = $wpdb->insert('$table_name', 
                                     array(
@@ -137,32 +137,36 @@ function form_display () {
 
 ?>
 	<div id="respond">
-			<?php //echo $response; ?>
+			<?php echo $database_data['prayer_day']; ?>
 			<form action="<?php esc_url( $_SERVER['REQUEST_URI'] ); ?> " method="POST">
 	    		<p><label for="name">Prayer Day: <span style="color:red">*</span> <br>
-		    		<input type="radio" name="day" value="Monday" > Monday<br>
-	  				<input type="radio" name="day" value="Tuesday"> Tuesday<br>
-	  				<input type="radio" name="day" value="Wednesday"> Wednesday<br>
-	  				<input type="radio" name="day" value="Thursday"> Thursday<br>
-	  				<input type="radio" name="day" value="Friday"> Friday<br>
-	  				<input type="radio" name="day" value="Saturday"> Saturday<br>
-	  				<input type="radio" name="day" value="Sunday" checked> Sunday<br></label></p>
+		    		<input type="radio" name="day" value="Monday" <?php echo ($database_data['prayer_day'] == 'Monday' ? 'checked' : ''); ?> > Monday<br>
+	  				<input type="radio" name="day" value="Tuesday" <?php echo ($database_data['prayer_day'] == 'Tuesday' ? 'checked' : ''); ?> > Tuesday<br>
+	  				<input type="radio" name="day" value="Wednesday" <?php echo ($database_data['prayer_day'] == 'Wednesday' ? 'checked' : ''); ?> > Wednesday<br>
+	  				<input type="radio" name="day" value="Thursday" <?php echo ($database_data['prayer_day'] == 'Thursday' ? 'checked' : ''); ?> > Thursday<br>
+	  				<input type="radio" name="day" value="Friday" <?php echo ($database_data['prayer_day'] == 'Friday' ? 'checked' : ''); ?> > Friday<br>
+	  				<input type="radio" name="day" value="Saturday" <?php echo ($database_data['prayer_day'] == 'Saturday' ? 'checked' : ''); ?> > Saturday<br>
+	  				<input type="radio" name="day" value="Sunday" <?php echo ($database_data['prayer_day'] === 'Sunday' ? 'checked' : ''); ?> > Sunday<br></label></p>
 	    		
 	    		<p><label for="start_time">Prayer Start Time: <span style="color:red">*</span> <br>
-	    			<input type="time" name="start_time" value=""></label></p>
+	    			<span style="font-size:10px; font-style: italic; color: #737373">Enter time HH:MM:SS formate</span><br /><input type="time" name="start_time" value="<?php echo ($database_data['prayer_start_time'] ? get_time_formated($database_data['prayer_start_time']) : '');?>"></label><br /></p>
 	    		
 	    		<p><label for="end_time">Prayer End Time: <span style="color:red">*</span> <br>
-	    		<input type="time" name="end_time" value=""></label></p>
+	    		<span style="font-size:10px; font-style: italic; color: #737373">Enter time HH:MM:SS formate</span><br /><input type="time" name="end_time" value="<?php echo ($database_data['prayer_start_time'] ? get_time_formated($database_data['prayer_end_time']) : '');?>"></label></p>
 	    		
 	    		<p><label for="message_human">Daylight Savings: <span style="color:red">*</span> <br>
-	    			<input type="radio" name="daylight" value="0" checked> Enable<br>
-	  				<input type="radio" name="daylight" value="1" > Disable<br></label></p>
+	    			<input type="radio" name="daylight" value="0" <?php echo ($database_data['daysaving_is_enabled'] ? 'checked' : ''); ?>> Enable<br>
+	  				<input type="radio" name="daylight" value="1" <?php echo (!$database_data['daysaving_is_enabled'] ? 'checked' : ''); ?>> Disable<br></label></p>
 	    		<input type="hidden" name="submitted" value="1">
 	    		<p><input type="submit" name="form-submission"></p>
 	  		</form>
 		</div>
 	
 <?php }	
+}
+
+function get_time_formated ($value) {
+	return date('H:i:s', strtotime($value));
 }
 
 function load_cutom_plugin_scripts () {
