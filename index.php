@@ -11,12 +11,12 @@
 
 // Database table creation for counter pluggin
 
-function create_database_for_pluggin () {
-	
-	global $wpdb;
+    global $wpdb;
   	global $table_name;
-    
-    $table_name = $wpdb->prefix . 'countdown_timer';
+  	$table_name = $wpdb->prefix . 'countdown_timer';
+
+function create_database_for_pluggin () {
+	// $table_name = $wpdb->prefix . 'countdown_timer';
  
 	// create the ECPT metabox database table
 	if($wpdb->get_var("show tables like '".$table_name."'") != $table_name) 
@@ -49,7 +49,8 @@ function wp_dateTime_counter() {
 		$current_date_time_new = date('Y-m-d H:i:s', strtotime('+1 hour', strtotime(date('Y-m-d h:i:s'))));
         $next_sunday = date('Y-m-d H:i:s', strtotime('next Sunday', strtotime(date('Y-m-d h:i:s'))));
 		$next_sunday = date('Y-m-d H:i:s', strtotime($next_sunday)+41400);
-        ?>
+		select_data_from_database();
+		?>
 		<div id="getting-started"></div>
 		<script type="text/javascript">
 		jQuery(document).ready(function(){
@@ -89,9 +90,36 @@ function wp_dateTime_counter_admin_page () { ?>
 	</div>
 	
 <?php }
+
+
+
 //Extracting data from the database
 function select_data_from_database() {
-	$data_from_database = $wpdb->get_results('SELECT * FROM '.$table_name.'');
+	global $wpdb;
+  	global $table_name;
+	$data_from_database = $wpdb->get_results('SELECT * FROM '.$table_name.' ');
+	switch(count($data_from_database)) {
+		case 0: 
+			echo "<p> Nothing in the Database. Kindly add new records</p>";
+			break;
+		case 1:
+			foreach($data_from_database as $values) {
+				return $data = array(
+					'id' => $values->id,
+					'prayer_day' => $values->prayer_day,
+					'prayer_start_time' => $values->prayer_start_time,
+					'prayer_end_time' => $values->prayer_end_time,
+					'daysaving_is_enabled' => $values->daysaving_is_enabled	
+					);
+			}
+			break;
+		case 2:
+			echo "<p> Database Configuration Error!</p>"; 
+			/***
+			I am assuming there will alwaays remain single entiry in the database. Incase of Multiple      entries change the code according to you requirements. ***/
+			break;
+	}
+	
 }
 
 //display form in admin section
